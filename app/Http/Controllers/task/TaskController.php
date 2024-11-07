@@ -4,10 +4,20 @@ namespace App\Http\Controllers\task;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Actions\Task\StoreTaskAction;
 use App\Http\Requests\Task\StoreTaskRequest;
 
 class TaskController extends Controller
 {
+
+    protected $storeTaskAction;
+
+    public function __construct(StoreTaskAction $storeTaskAction)
+    {
+        $this->storeTaskAction = $storeTaskAction;
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -29,8 +39,19 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        return $request;
+        $authUser = auth()->user();
+        $validated = $request->validated();
+        $validated['author_id'] = $authUser->id;
+        $validated['created_by'] = $authUser->id;
+
+        try {
+            $this->storeTaskAction->execute($validated);
+            return redirect()->route('tasks.create')->with('success', 'Task created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('tasks.create')->with('error', 'Failed to create task. Please try again.');
+        }
     }
+
 
     /**
      * Display the specified resource.

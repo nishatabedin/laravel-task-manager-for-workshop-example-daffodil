@@ -23,8 +23,7 @@ class StoreTaskRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'status' => 'required|in:Pending,In Progress,Completed',
-            // 'category_id' => 'required|integer|exists:categories,id',
-            'category_id' => 'required|integer',
+            'category_id' => 'required|integer|exists:categories,id',
         ];
     }
 }
