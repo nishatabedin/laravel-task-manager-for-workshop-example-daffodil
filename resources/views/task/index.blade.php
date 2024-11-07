@@ -61,13 +61,42 @@
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire(
-                        'Deleted!',
-                        'Your task has been deleted.',
-                        'success'
-                    );
-
-                   // window.location.href = `/tasks/${taskId}/delete`; 
+                    // Send AJAX request to delete the task
+                    fetch(`/tasks/${taskId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Deleted!',
+                                'Your task has been deleted.',
+                                'success'
+                            ).then(() => {
+                              
+                                // Remove the task row or reload the page
+                                // document.getElementById(`task-row-${taskId}`).remove();
+                               location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to delete the task. Please try again.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire(
+                            'Error!',
+                            'Something went wrong. Please try again.',
+                            'error'
+                        );
+                    });
                 }
             });
         }
