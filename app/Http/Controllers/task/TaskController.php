@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\task;
 
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -28,8 +29,10 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return view('task.index');
+        $tasks = Task::with('author', 'category')->get();
+        return view('task.index', compact('tasks'));
     }
+
 
 
 
@@ -97,8 +100,11 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        return view('task.edit');
+        $task = Task::findOrFail($id);
+        $categories = Category::orderBy('name')->get();
+        return view('task.edit', compact('task', 'categories'));
     }
+
 
 
 
