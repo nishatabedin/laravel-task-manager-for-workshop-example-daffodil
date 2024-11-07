@@ -43,3 +43,8 @@ a:hover {
     background-color: #3490dc;
     color: white;
 }
+
+.custom-text-red {
+    color: red;
+}
+

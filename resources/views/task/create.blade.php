@@ -15,13 +15,20 @@
                         <div class="mb-4">
                             <label for="title" class="block text-gray-700 font-medium mb-2">Title</label>
                             <input type="text" name="title" id="title"
-                                class="w-full border-gray-300 rounded-md shadow-sm" required>
+                                class="w-full border-gray-300 rounded-md shadow-sm">
+                            @error('title')
+                                <p class="custom-text-red p-2">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="mb-4">
                             <label for="description" class="block text-gray-700 font-medium mb-2">Description</label>
                             <textarea name="description" id="description" rows="4"
-                                class="w-full border-gray-300 rounded-md shadow-sm" required></textarea>
+                                class="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                            
+                            @error('description')
+                                <p class="custom-text-red p-2">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="mb-4">

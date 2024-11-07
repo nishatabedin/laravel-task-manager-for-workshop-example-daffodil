@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\task;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Task\StoreTaskRequest;
 
 class TaskController extends Controller
 {
@@ -26,9 +27,9 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        //
+        return $request;
     }
 
     /**
