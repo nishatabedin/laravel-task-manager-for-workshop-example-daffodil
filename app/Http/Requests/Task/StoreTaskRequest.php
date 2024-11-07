@@ -19,11 +19,18 @@ class StoreTaskRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'status' => 'required|in:Pending,In Progress,Completed',
             'category_id' => 'required|integer|exists:categories,id',
         ];
+
+        // Add validation for author_id only if the authenticated user is an admin
+        if (auth()->check() && auth()->user()->role === 'admin') {
+            $rules['author_id'] = 'required|integer|exists:users,id';
+        }
+
+        return $rules;
     }
 }

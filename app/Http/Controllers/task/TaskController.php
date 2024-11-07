@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\task;
 
+use App\Models\User;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Actions\Task\StoreTaskAction;
@@ -18,6 +20,9 @@ class TaskController extends Controller
     }
 
 
+
+
+
     /**
      * Display a listing of the resource.
      */
@@ -26,13 +31,30 @@ class TaskController extends Controller
         return view('task.index');
     }
 
+
+
+
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('task.create');
+        $authUser = auth()->user();
+        $categories = Category::orderBy('name')->get();
+        $users = [];
+
+        if ($authUser->role === 'admin') {
+            $users = User::orderBy('name')->get();
+        }
+
+        return view('task.create', compact('authUser', 'categories', 'users'));
     }
+
+
+
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -41,7 +63,7 @@ class TaskController extends Controller
     {
         $authUser = auth()->user();
         $validated = $request->validated();
-        $validated['author_id'] = $authUser->id;
+        $validated['author_id'] = $authUser->role === 'admin' ? $validated['author_id'] : $authUser->id;
         $validated['created_by'] = $authUser->id;
 
         try {
@@ -53,6 +75,10 @@ class TaskController extends Controller
     }
 
 
+
+
+
+
     /**
      * Display the specified resource.
      */
@@ -60,6 +86,11 @@ class TaskController extends Controller
     {
         //
     }
+
+
+
+
+
 
     /**
      * Show the form for editing the specified resource.
@@ -69,6 +100,10 @@ class TaskController extends Controller
         return view('task.edit');
     }
 
+
+
+
+
     /**
      * Update the specified resource in storage.
      */
@@ -76,6 +111,13 @@ class TaskController extends Controller
     {
         //
     }
+
+
+
+
+
+
+
 
     /**
      * Remove the specified resource from storage.
