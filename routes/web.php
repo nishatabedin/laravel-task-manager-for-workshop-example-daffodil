@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\task\TaskController;
+use App\Http\Controllers\task\TaskDemoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,11 +18,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/tasks', [ProfileController::class, 'tasks'])->name('tasks');
 
-    Route::get('/tasks', function () {
-        return view('dashboard');
-    })->name('tasks');
+    Route::resource('task-demo', TaskDemoController::class);
+    Route::resource('tasks', TaskController::class);
 });
 
 require __DIR__ . '/auth.php';

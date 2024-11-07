@@ -10,14 +10,16 @@
                     </a>
                 </div>
 
+
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-
-                    <!-- New "Create Task" Menu Item -->
-                    <x-nav-link :active="request()->routeIs('tasks.create')">
+                    <x-nav-link :href="route('tasks.index')" :active="request()->routeIs('tasks.index')">
+                        {{ __('All Tasks') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('tasks.create')" :active="request()->routeIs('tasks.create')">
                         {{ __('Create Task') }}
                     </x-nav-link>
                 </div>
