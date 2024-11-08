@@ -6,20 +6,32 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Services\TaskService;
+use App\Services\UserService;
+use App\Services\CategoryService;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Actions\Task\StoreTaskAction;
 use App\Http\Requests\Task\StoreTaskRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TaskController extends Controller
 {
 
-    protected $storeTaskAction;
+    protected $authUser;
+    protected $taskService;
+    protected $userService;
+    protected $categoryService;
 
-    public function __construct(StoreTaskAction $storeTaskAction)
+
+    public function __construct(TaskService $taskService, UserService $userService, CategoryService $categoryService)
     {
-        $this->storeTaskAction = $storeTaskAction;
+        // $this->authUser = Auth::user();
+        $this->authUser = auth()->user();
+        $this->taskService = $taskService;
+        $this->userService = $userService;
+        $this->categoryService = $categoryService;
     }
-
 
 
 
@@ -27,11 +39,59 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+    public function index(TaskService $taskService)
     {
-        $tasks = Task::with('author', 'category')->get();
+        $tasks =  $this->taskService->getTasksByRole($this->authUser->role, $this->authUser->id);
         return view('task.index', compact('tasks'));
     }
+
+
+
+
+
+    public function index2()
+    {
+        $authUser = auth()->user();
+        $tasks = Task::with('author', 'category')
+            ->when($authUser->role !== 'admin', function ($query) use ($authUser) {
+                $query->where('author_id', $authUser->id);
+            })
+            ->get();
+
+        return view('task.index', compact('tasks'));
+    }
+
+
+
+
+
+    public function index1()
+    {
+        $authUser = auth()->user();
+        if ($authUser->role === 'admin') {
+            $tasks = Task::with('author', 'category')->get();
+        } else {
+            $tasks = Task::with('author', 'category')->where('author_id', $authUser->id)->get();
+        }
+        return view('task.index', compact('tasks'));
+    }
+
+
+
+    public function index0()
+    {
+        $authUser = auth()->user();
+        if ($authUser->role === 'admin') {
+            $tasks = Task::query()->get();
+        } else {
+            $tasks = Task::query()->where('author_id', $authUser->id)->get();
+        }
+        return view('task.index', compact('tasks'));
+    }
+
+
+
 
 
 
@@ -41,7 +101,28 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+
+
+
     public function create()
+    {
+        $categories = $this->categoryService->getAllCategories();
+        $users = $this->authUser->role === 'admin' ? $this->userService->getAllUsers() : [];
+
+        return view('task.create', [
+            'authUser' => $this->authUser,
+            'categories' => $categories,
+            'users' => $users,
+        ]);
+    }
+
+
+
+
+
+
+
+    public function create0()
     {
         $authUser = auth()->user();
         $categories = Category::orderBy('name')->get();
@@ -62,7 +143,7 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request)
+    public function store(StoreTaskRequest $request, StoreTaskAction $storeTaskAction)
     {
         $authUser = auth()->user();
         $validated = $request->validated();
@@ -70,7 +151,7 @@ class TaskController extends Controller
         $validated['created_by'] = $authUser->id;
 
         try {
-            $this->storeTaskAction->execute($validated);
+            $storeTaskAction->execute($validated);
             return redirect()->route('tasks.create')->with('success', 'Task created successfully!');
         } catch (\Exception $e) {
             return redirect()->route('tasks.create')->with('error', 'Failed to create task. Please try again.');
@@ -100,10 +181,23 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        $task = Task::findOrFail($id);
-        $categories = Category::orderBy('name')->get();
+        $task = $this->taskService->getTaskById($id);
+
+        // Check if the task was found
+        if (!$task) {
+            return redirect()->route('tasks.index')->with('error', 'Task not found.');
+        }
+
+        // Check if the user is allowed to edit the task
+        if ($this->authUser->role !== 'admin' && $task->author_id !== $this->authUser->id) {
+            return redirect()->route('tasks.index')->with('error', 'You do not have permission to edit this task.');
+        }
+
+        $categories = $this->categoryService->getAllCategories();
+
         return view('task.edit', compact('task', 'categories'));
     }
+
 
 
 

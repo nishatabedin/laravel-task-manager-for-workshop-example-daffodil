@@ -2,20 +2,30 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\Task;
 use App\Models\TaskHistory;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 class TaskService
 {
-    /**
-     * Store a new task and its history.
-     *
-     * @param array $taskData
-     * @return Task
-     * @throws Exception
-     */
+
+
+    public function getTaskById(string $id): Task
+    {
+        return Task::with('author', 'category')->findOrFail($id);
+    }
+
+
+    // public function getTaskById(string $id): ?Task
+    // {
+    //     return Task::with('author', 'category')->find($id);
+    // }
+
+
+
+
     public function storeTask(array $taskData): Task
     {
         try {
@@ -44,5 +54,17 @@ class TaskService
         } catch (Exception $e) {
             throw new Exception('Failed to create task. Please try again.');
         }
+    }
+
+
+
+
+    public function getTasksByRole(string $role, int $authorId): Collection
+    {
+        return Task::with('author', 'category')
+            ->when($role !== 'admin', function ($query) use ($authorId) {
+                $query->where('author_id', $authorId);
+            })
+            ->get();
     }
 }
