@@ -12,6 +12,27 @@
                     @if ($tasks->isEmpty())
                     <p>No tasks available.</p>
                     @else
+
+                    @if (session('error'))
+                    <div id="alert-box"
+                        class="bg-red-500 border border-red-700 text-white px-4 py-3 rounded relative mb-4"
+                        role="alert">
+                        <strong class="font-bold">Error!</strong>
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <button onclick="document.getElementById('alert-box').style.display='none'">
+                                <svg class="fill-current h-6 w-6 text-white" role="button"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <title>Close</title>
+                                    <path
+                                        d="M14.348 5.652a.5.5 0 00-.707 0L10 9.293 6.359 5.652a.5.5 0 00-.707.707L9.293 10l-3.641 3.641a.5.5 0 00.707.707L10 10.707l3.641 3.641a.5.5 0 00.707-.707L10.707 10l3.641-3.641a.5.5 0 000-.707z" />
+                                </svg>
+                            </button>
+                        </span>
+                    </div>
+                    @endif
+
+
                     <table class="min-w-full border-collapse border border-gray-300">
                         <thead>
                             <tr>
@@ -31,15 +52,39 @@
                                 <td class="border border-gray-300 px-4 py-2">{{ $task->status }}</td>
                                 <td class="border border-gray-300 px-4 py-2">{{ $task->author->name }}</td>
                                 <td class="border border-gray-300 px-4 py-2">{{ $task->category->name }}</td>
-                                <td class="border border-gray-300 px-4 py-2">
+
+
+                                {{-- <td class="border border-gray-300 px-4 py-2">
                                     <a href="{{ route('tasks.edit', $task->id) }}" class="text-blue-500">Edit</a> |
                                     <a href="#" class="text-red-500"
                                         onclick="confirmDelete(event, {{ $task->id }})">Delete</a>
+                                </td> --}}
+
+
+                                <td class="border border-gray-300 px-4 py-2">
+                                    @can('update', $task)
+                                    <a href="{{ route('tasks.edit', $task->id) }}" class="text-blue-500">Edit</a>
+                                    @endcan
+
+                                    @can('delete', $task)
+                                    @can('update', $task)
+                                    |
+                                    @endcan
+                                    <a href="#" class="text-red-500"
+                                        onclick="confirmDelete(event, {{ $task->id }})">Delete</a>
+                                    @endcan
                                 </td>
+
+
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+
+                    <div class="mt-4">
+                        {{ $tasks->links() }}
+                        <!-- Pagination links -->
+                    </div>
                     @endif
                 </div>
             </div>
@@ -74,18 +119,17 @@
                         if (data.success) {
                             Swal.fire(
                                 'Deleted!',
-                                'Your task has been deleted.',
+                                data.message, // Display dynamic message
                                 'success'
                             ).then(() => {
-                              
-                                // Remove the task row or reload the page
+                                // Optionally, remove the task row or reload the page
                                 // document.getElementById(`task-row-${taskId}`).remove();
-                               location.reload();
+                                location.reload();
                             });
                         } else {
                             Swal.fire(
                                 'Error!',
-                                'Failed to delete the task. Please try again.',
+                                data.message || 'Failed to delete the task. Please try again.',
                                 'error'
                             );
                         }
@@ -99,6 +143,7 @@
                     });
                 }
             });
+
         }
     </script>
 </x-app-layout>

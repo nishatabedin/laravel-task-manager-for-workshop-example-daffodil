@@ -3,6 +3,7 @@
 namespace App\Actions\Task;
 
 use App\Services\TaskService;
+use App\Services\Task\DTOs\TaskDTO;
 
 class StoreTaskAction
 {
@@ -13,10 +14,16 @@ class StoreTaskAction
         $this->taskService = $taskService;
     }
 
-   
-    
-    public function execute(array $taskData)
+
+
+    public function execute(TaskDTO $taskDTO)
     {
-        return $this->taskService->storeTask($taskData);
+        return $this->taskService->storeTask($taskDTO);
+    }
+
+
+    public function execute0(array $taskData)
+    {
+        return $this->taskService->storeTask0($taskData);
     }
 }

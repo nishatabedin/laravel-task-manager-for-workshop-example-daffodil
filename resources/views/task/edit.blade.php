@@ -9,6 +9,46 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
+
+                    <!-- Display general success or error messages -->
+                    @if (session('success'))
+                    <div id="alert-box"
+                        class="bg-green-500 border border-green-700 text-white px-4 py-3 rounded relative mb-4"
+                        role="alert">
+                        <strong class="font-bold">Success!</strong>
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <button onclick="document.getElementById('alert-box').style.display='none'">
+                                <svg class="fill-current h-6 w-6 text-white" role="button"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <title>Close</title>
+                                    <path
+                                        d="M14.348 5.652a.5.5 0 00-.707 0L10 9.293 6.359 5.652a.5.5 0 00-.707.707L9.293 10l-3.641 3.641a.5.5 0 00.707.707L10 10.707l3.641 3.641a.5.5 0 00.707-.707L10.707 10l3.641-3.641a.5.5 0 000-.707z" />
+                                </svg>
+                            </button>
+                        </span>
+                    </div>
+                    @endif
+
+                    @if (session('error'))
+                    <div id="alert-box"
+                        class="bg-red-500 border border-red-700 text-white px-4 py-3 rounded relative mb-4"
+                        role="alert">
+                        <strong class="font-bold">Error!</strong>
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <button onclick="document.getElementById('alert-box').style.display='none'">
+                                <svg class="fill-current h-6 w-6 text-white" role="button"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <title>Close</title>
+                                    <path
+                                        d="M14.348 5.652a.5.5 0 00-.707 0L10 9.293 6.359 5.652a.5.5 0 00-.707.707L9.293 10l-3.641 3.641a.5.5 0 00.707.707L10 10.707l3.641 3.641a.5.5 0 00.707-.707L10.707 10l3.641-3.641a.5.5 0 000-.707z" />
+                                </svg>
+                            </button>
+                        </span>
+                    </div>
+                    @endif
+
                     <form action="{{ route('tasks.update', $task->id) }}" method="POST">
                         @csrf
                         @method('PUT')
