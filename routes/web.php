@@ -12,7 +12,8 @@ Route::get('/', function () {
 
 Route::get('/test', function () {
    // return view('layout.app2');
-    return view('pages.home');
+    //return view('pages.home');
+    return view('layout.app3');
 });
 
 Route::get('/dashboard', function () {
