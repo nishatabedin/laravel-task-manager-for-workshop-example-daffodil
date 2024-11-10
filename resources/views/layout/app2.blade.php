@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ asset('styles.css') }}">
 </head>
 
-<body>
+<body @isset($testClass) class="{{$testClass}}"@endisset>
     @include('layout.components.header')
 
     @include('layout.components.nav')

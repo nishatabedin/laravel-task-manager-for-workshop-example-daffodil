@@ -1,4 +1,4 @@
-@extends('layout.app2')
+@extends('layout.app2', ['testClass'=>'testClass'])
 
 @section('title', 'Page Title')
 
