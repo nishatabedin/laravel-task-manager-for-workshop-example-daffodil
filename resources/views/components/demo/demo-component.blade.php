@@ -1,3 +1,4 @@
 <div>
-    <!-- Simplicity is an acquired taste. - Katharine Gerould -->
+  test 5555
+  {{ $test() }}
 </div>

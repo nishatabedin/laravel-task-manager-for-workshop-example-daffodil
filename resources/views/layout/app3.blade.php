@@ -22,7 +22,12 @@
     </x-demo.nav>
 
 
-    <x-demo.demo-component2 navClassLi4="navClassLi4"/>
+    @php
+    $anotherClass2="anotherClass2Demoooooooooo";  
+    @endphp
+
+
+    <x-demo.demo-component2 navClassLi4="navClassLi4"  :anotherClass2="$anotherClass2"/>
 
 
 
